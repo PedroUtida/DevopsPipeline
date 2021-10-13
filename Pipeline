@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+        stages{
+       
+        stage('Extrair Codigo Fonte') {
+            steps{
+                echo 'Extraindo codigo fonte...'
+                git branch: 'main', url: 'https://github.com/PedroUtida/DevopsPipeline'
+            }
+        }
+       
+        stage("Aprovar operação"){
+            steps{
+                script{
+                    timeout(time: 2, unit: 'HOURS'){
+                        def userInput = input(
+                            id: 'userInput', message: 'Aprovar o Deploy?', parameters:[
+                            [$class: 'TextParameterDefinition', defaultValue: 'Não', description: 'Realizar Deploy ?', name: 'Executar']])
+                        echo (userInput)
+                        if( userInput == "Sim") {
+                            echo "O Deploy será realizado"
+                        } else{
+                            echo "Odeploy NÂO será realizado"
+                        }
+                    }
+                }
+            }
+        }
+       
+       
+        stage('Build') {
+            steps{
+                echo 'Realizando o Build...'
+                echo 'Ola Maven'
+                sh '/opt/maven/bin/mvn -v'
+            }
+       
+       
+        }
+       
+       
+       
+        stage('Teste') {
+            steps{
+                echo 'Testando o codigo...'
+                sleep 4
+            }
+        }
+       
+       
+       
+        stage('Deploy') {
+            steps{
+                echo 'Realizando o Deploy em Desenvolvimento...'
+                sleep 5
+            }
+        }
+       
+       
+        }
+}
