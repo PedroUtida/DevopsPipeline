@@ -1,13 +1,31 @@
-pypeline{
-  agent none
-  stages{
-    stage('Build'){
-      agent{
-        echo "Hello World"
-      
-      }
-    }
-  
-  }
+node {
+
+   stage('Extrair Codigo Fonte') {
+         echo 'Extraindo codigo fonte...'
+         checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/PedroUtida/HelloWorld.git']]])
+   }
+
+   stage('Build') {
+        echo 'Verificando Sistema Operacional...'
+        if (isUnix()) {
+           echo 'Realizando o Build...'
+           echo 'Ola Maven'
+           sh '/opt/maven/bin/mvn -v'
+        }
+        else {
+           echo 'NO Linux'
+        }
+
+   }
+
+   stage('Teste') {
+         echo 'Testando o codigo...'
+         sleep 4
+   }
+
+   stage('Deploy') {
+         echo 'Realizando o Deploy em Desenvolvimento...'
+         sleep 5
+   }
 
 }
